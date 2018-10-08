@@ -9,6 +9,7 @@ use App\Entity\Programmer;
 use App\Form\ProgrammerType;
 use App\Form\UpdateProgrammerType;
 use App\Pagination\PaginatedCollection;
+use App\Pagination\PaginationFactory;
 use App\Repository\ProgrammerRepository;
 use App\Repository\UserRepository;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
@@ -105,62 +106,18 @@ class ProgrammerController extends APIBaseController {
 	/**
 	 * @Route("/api/programmers", name="api_programmers_list", methods="GET")
 	 */
-	public function listAction(Request $request, ProgrammerRepository $programmerRepository){
-		$page = $request->query->get('page', 1);
-
+	public function listAction(
+		Request $request,
+		ProgrammerRepository $programmerRepository,
+		PaginationFactory $paginationFactory
+	){
 		$qb  = $programmerRepository->findAllQueryBuilder();
-		$adapter = new DoctrineORMAdapter($qb);
-		$pagerfanta = new Pagerfanta($adapter);
-		$pagerfanta->setMaxPerPage(10);
-		$pagerfanta->setCurrentPage($page);
 
-		$programmers = [];
-		foreach ($pagerfanta->getCurrentPageResults() as $programmer){
-			$programmers[] = $programmer;
-		}
-
-		$paginatedCollection = new PaginatedCollection(
-			$programmers,
-			$pagerfanta->getNbResults()
+		$paginatedCollection = $paginationFactory->createCollection(
+			$qb,
+			$request,
+			'api_programmers_list'
 		);
-
-		$route = 'api_programmers_list';
-		$routeParams = [];
-
-		$createLinkUrl = function($targetPage) use ($route, $routeParams){
-			return $this->generateUrl($route, array_merge(
-				$routeParams,
-				['page' => $targetPage]
-			));
-		};
-
-		$paginatedCollection->addLink(
-			'self',
-			$createLinkUrl($page)
-		);
-		$paginatedCollection->addLink(
-			'first',
-			$createLinkUrl(1)
-		);
-		$paginatedCollection->addLink(
-			'last',
-			$createLinkUrl($pagerfanta->getNbPages())
-		);
-
-		if ($pagerfanta->hasNextPage()){
-			$paginatedCollection->addLink(
-				'next',
-				$createLinkUrl($pagerfanta->getNextPage())
-			);
-		}
-
-		if ($pagerfanta->hasPreviousPage()){
-			$paginatedCollection->addLink(
-				'prev',
-				$createLinkUrl($pagerfanta->getPreviousPage())
-			);
-		}
-
 		return $this->createAPIResponse($paginatedCollection);
 	}
 
