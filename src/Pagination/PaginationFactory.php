@@ -38,6 +38,10 @@ class PaginationFactory{
 			$pagerfanta->getNbResults()
 		);
 
+		$routeParams = array_merge(
+			$routeParams,
+			$request->query->all()
+		);
 		$createLinkUrl = function($targetPage) use ($route, $routeParams){
 			return $this->router->generate($route, array_merge(
 				$routeParams,
