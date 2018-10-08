@@ -8,6 +8,7 @@ use App\Controller\APIBaseController;
 use App\Entity\Programmer;
 use App\Form\ProgrammerType;
 use App\Form\UpdateProgrammerType;
+use App\Pagination\PaginatedCollection;
 use App\Repository\ProgrammerRepository;
 use App\Repository\UserRepository;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
@@ -118,11 +119,12 @@ class ProgrammerController extends APIBaseController {
 			$programmers[] = $programmer;
 		}
 
-		return $this->createAPIResponse([
-			'total' => $pagerfanta->getNbResults(),
-			'count' => count($programmers),
-			'programmers' => $programmers
-		]);
+		$paginatedCollection = new PaginatedCollection(
+			$programmers,
+			$pagerfanta->getNbResults()
+		);
+
+		return $this->createAPIResponse($paginatedCollection);
 	}
 
 	private function processForm(Request $request, FormInterface $form){

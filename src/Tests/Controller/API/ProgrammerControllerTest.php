@@ -66,9 +66,9 @@ class ProgrammerControllerTest extends ApiTestCase {
 
 		$response = $this->client->get('/api/programmers');
 		$this->assertEquals(200, $response->getStatusCode());
-		$this->asserter()->assertResponsePropertyIsArray($response, 'programmers');
-		$this->asserter()->assertResponsePropertyCount($response, 'programmers', 2);
-		$this->asserter()->assertResponsePropertyEquals($response, 'programmers[1].nickname', 'CowboyCoder');
+		$this->asserter()->assertResponsePropertyIsArray($response, 'items');
+		$this->asserter()->assertResponsePropertyCount($response, 'items', 2);
+		$this->asserter()->assertResponsePropertyEquals($response, 'items[1].nickname', 'CowboyCoder');
 
 	}
 
@@ -85,7 +85,7 @@ class ProgrammerControllerTest extends ApiTestCase {
 
 		$this->asserter()->assertResponsePropertyEquals(
 			$response,
-			'programmers[5].nickname',
+			'items[5].nickname',
 			'Programmer5'
 		);
 
@@ -113,7 +113,7 @@ class ProgrammerControllerTest extends ApiTestCase {
 
 		$this->asserter()->assertResponsePropertyEquals(
 			$response,
-			'programmers[5].nickname',
+			'items[5].nickname',
 			'Programmer15'
 		);
 
@@ -134,7 +134,7 @@ class ProgrammerControllerTest extends ApiTestCase {
 
 		$this->asserter()->assertResponsePropertyEquals(
 			$response,
-			'programmers[4].nickname',
+			'items[4].nickname',
 			'Programmer24'
 		);
 
