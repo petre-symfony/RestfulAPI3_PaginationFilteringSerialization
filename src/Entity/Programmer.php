@@ -5,13 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Annotation\Link;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProgrammerRepository")
  * @Serializer\ExclusionPolicy("all")
  * @Link(
  *   "self",
- *   route = "api_programmer_show",
+ *   route = "api_programmers_show",
  *   params = { "nickname": "object.getNickname()"}
  * )
  */

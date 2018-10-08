@@ -2,7 +2,9 @@
 namespace App\Serializer;
 
 
+use App\Annotation\Link;
 use App\Entity\Programmer;
+use Doctrine\Common\Annotations\Reader;
 use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\EventDispatcher\ObjectEvent;
 use JMS\Serializer\JsonSerializationVisitor;
@@ -13,9 +15,14 @@ class LinkSerializationSubscriber implements EventSubscriberInterface {
 	 * @var RouterInterface
 	 */
 	private $router;
+	/**
+	 * @var Reader
+	 */
+	private $annotationReader;
 
-	public function __construct(RouterInterface $router){
+	public function __construct(RouterInterface $router, Reader $annotationReader){
 		$this->router = $router;
+		$this->annotationReader = $annotationReader;
 	}
 
 	public static function getSubscribedEvents(){
@@ -32,16 +39,24 @@ class LinkSerializationSubscriber implements EventSubscriberInterface {
 	public function onPostSerialize(ObjectEvent $event){
 		/** @var JsonSerializationVisitor $visitor */
 		$visitor = $event->getVisitor();
-		/** @var Programmer $programmer */
-		$programmer = $event->getObject();
-		$visitor->addData(
-			'uri',
-			$this->router->generate(
-				'api_programmers_show',
-				[
-					'nickname' => $programmer->getNickname()
-				]
-			)
-		);
+
+		$object = $event->getObject();
+		$annotations = $this->annotationReader
+			->getClassAnnotations(new \ReflectionObject($object));
+
+		$links = [];
+
+		foreach ($annotations as $annotation){
+			if ($annotation instanceof Link){
+				$uri = $this->router->generate(
+					$annotation->route,
+					$annotation->params
+				);
+
+				$links[$annotation->name] = $uri;
+			}
+		}
+
+		$visitor->addData('_links', $links);
 	}
 }
