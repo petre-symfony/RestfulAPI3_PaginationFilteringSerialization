@@ -111,7 +111,9 @@ class ProgrammerController extends APIBaseController {
 		ProgrammerRepository $programmerRepository,
 		PaginationFactory $paginationFactory
 	){
-		$qb  = $programmerRepository->findAllQueryBuilder();
+		$filter = $request->query->get('filter');
+
+		$qb  = $programmerRepository->findAllQueryBuilder($filter);
 
 		$paginatedCollection = $paginationFactory->createCollection(
 			$qb,
