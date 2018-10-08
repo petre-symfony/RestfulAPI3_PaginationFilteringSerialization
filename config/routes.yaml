@@ -1,0 +1,16 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+
+controllers:
+  resource: '../src/Controller/'
+  type: annotation
+
+api:
+  resource: '../src/Controller/API'
+  type: annotation
+  defaults:
+    _format: json
+
+logout:
+  path: /logout
