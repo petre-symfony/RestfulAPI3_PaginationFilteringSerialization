@@ -63,6 +63,19 @@ class ProgrammerControllerTest extends ApiTestCase {
 		);
 	}
 
+	public function testGetProgrammerDeep(){
+		$this->createProgrammer([
+			'nickname' => 'UnitTester',
+			'avatarNumber' => '3'
+		]);
+
+		$response = $this->client->get('/api/programmers/UnitTester?deep=1');
+		$this->assertEquals(200, $response->getStatusCode());
+		$this->asserter()->assertResponsePropertyExists(
+			$response,
+			'user.username'
+		);
+	}
 
 	public function testGETProgrammersCollection(){
 		$this->createProgrammer([

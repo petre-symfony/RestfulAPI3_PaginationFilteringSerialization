@@ -18,6 +18,13 @@ class APIBaseController extends AbstractController {
 		$context = new SerializationContext();
 		$context->setSerializeNull(true);
 
+		$request = $this->get('request_stack')->getCurrentRequest();
+		$groups = ['Default'];
+		if($request->query->get('deep')){
+			$groups[] = 'deep';
+		}
+		$context->setGroups($groups);
+
 		return $this->serializer->serialize($data, 'json', $context);
 	}
 
