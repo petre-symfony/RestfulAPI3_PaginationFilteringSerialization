@@ -30,8 +30,7 @@ class LinkSerializationSubscriber implements EventSubscriberInterface {
 			[
 				'event' => 'serializer.post_serialize',
 				'method' => 'onPostSerialize',
-				'format' => 'json',
-				'class' => 'App\Entity\Programmer'
+				'format' => 'json'
 			]
 		];
 	}
