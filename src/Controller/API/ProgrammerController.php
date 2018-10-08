@@ -10,6 +10,8 @@ use App\Form\ProgrammerType;
 use App\Form\UpdateProgrammerType;
 use App\Repository\ProgrammerRepository;
 use App\Repository\UserRepository;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,11 +104,25 @@ class ProgrammerController extends APIBaseController {
 	/**
 	 * @Route("/api/programmers", name="api_programmers_list", methods="GET")
 	 */
-	public function listAction(ProgrammerRepository $programmerRepository){
-		$programmers  = $programmerRepository->findAll();
-		$data = ['programmers' => $programmers];
+	public function listAction(Request $request, ProgrammerRepository $programmerRepository){
+		$page = $request->query->get('page', 1);
 
-		return $this->createAPIResponse($data);
+		$qb  = $programmerRepository->findAllQueryBuilder();
+		$adapter = new DoctrineORMAdapter($qb);
+		$pagerfanta = new Pagerfanta($adapter);
+		$pagerfanta->setMaxPerPage(10);
+		$pagerfanta->setCurrentPage($page);
+
+		$programmers = [];
+		foreach ($pagerfanta->getCurrentPageResults() as $programmer){
+			$programmers[] = $programmer;
+		}
+
+		return $this->createAPIResponse([
+			'total' => $pagerfanta->getNbResults(),
+			'count' => count($programmers),
+			'programmers' => $programmers
+		]);
 	}
 
 	private function processForm(Request $request, FormInterface $form){

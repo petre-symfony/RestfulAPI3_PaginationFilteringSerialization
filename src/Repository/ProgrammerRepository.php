@@ -17,6 +17,9 @@ class ProgrammerRepository extends ServiceEntityRepository {
     parent::__construct($registry, Programmer::class);
   }
 
+	public function findAllQueryBuilder(){
+		return $this->createQueryBuilder('programmer');
+	}
 //    /**
 //     * @return Programmer[] Returns an array of Programmer objects
 //     */
