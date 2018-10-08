@@ -124,6 +124,43 @@ class ProgrammerController extends APIBaseController {
 			$pagerfanta->getNbResults()
 		);
 
+		$route = 'api_programmers_list';
+		$routeParams = [];
+
+		$createLinkUrl = function($targetPage) use ($route, $routeParams){
+			return $this->generateUrl($route, array_merge(
+				$routeParams,
+				['page' => $targetPage]
+			));
+		};
+
+		$paginatedCollection->addLink(
+			'self',
+			$createLinkUrl($page)
+		);
+		$paginatedCollection->addLink(
+			'first',
+			$createLinkUrl(1)
+		);
+		$paginatedCollection->addLink(
+			'last',
+			$createLinkUrl($pagerfanta->getNbPages())
+		);
+
+		if ($pagerfanta->hasNextPage()){
+			$paginatedCollection->addLink(
+				'next',
+				$createLinkUrl($pagerfanta->getNextPage())
+			);
+		}
+
+		if ($pagerfanta->hasPreviousPage()){
+			$paginatedCollection->addLink(
+				'prev',
+				$createLinkUrl($pagerfanta->getPreviousPage())
+			);
+		}
+
 		return $this->createAPIResponse($paginatedCollection);
 	}
 

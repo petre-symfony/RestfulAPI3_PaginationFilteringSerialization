@@ -7,6 +7,8 @@ class PaginatedCollection {
 	private $total;
 	private $count;
 
+	private $_links = [];
+
 	/**
 	 * PaginatedCollection constructor.
 	 * @param $items
@@ -18,5 +20,7 @@ class PaginatedCollection {
 		$this->count = count($items);
 	}
 
-
+	public function addLink($ref, $url){
+		$this->_links[$ref] = $url;
+	}
 }
